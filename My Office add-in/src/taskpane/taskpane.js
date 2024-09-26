@@ -33,6 +33,7 @@ Office.onReady((info) => {
     document.getElementById("insert-table").onclick = () => tryCatch(insertTable);
     document.getElementById("create-content-control").onclick = () => tryCatch(createContentControl);
     document.getElementById("replace-content-in-control").onclick = () => tryCatch(replaceContentInControl);
+    document.getElementById("create-table-and-align-content").onclick = () => tryCatch(createTableAndAlignContent);
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
   }
@@ -150,8 +151,30 @@ const insertTable = async () => {
       ["Ivan", "2", "Botevgrad"]
     ];
 
-    // secondParagraph.insertTable(3, 3, Word.InsertLocation.after, tableData);
-    secondParagraph.insertTable(tableData.length, tableData[0].length, Word.InsertLocation.after, tableData);
+    secondParagraph.insertTable(3, 3, Word.InsertLocation.after, tableData);
+
+    await context.sync();
+  })
+}
+
+//create table and align its columns and rows to the center
+const createTableAndAlignContent = async() => {
+  await Word.run(async(context) => {
+    const data = [
+      ["Tokyo", "Beijing", "Seattle"],
+      ["Apple", "Orange", "Pineapple"]
+    ];
+    const table = context.document.body.insertTable(2, 3, "Start", data);
+    table.styleBuiltIn = Word.BuiltInStyleName.gridTable5Dark_Accent2;
+    table.styleFirstColumn = false;
+
+    const firstTable = context.document.body.tables.getFirst();
+    firstTable.load(["alignment", "verticalAlignment", "horizontalAlignment"]);
+    await context.sync();
+
+    firstTable.alignment = "Centered";
+    firstTable.horizontalAlignment = "Centered";
+    firstTable.verticalAlignment = "Centered";
 
     await context.sync();
   })
