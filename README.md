@@ -1,0 +1,1 @@
+# word-task-pane-addin
