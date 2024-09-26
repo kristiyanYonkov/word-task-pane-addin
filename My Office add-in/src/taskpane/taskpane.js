@@ -5,6 +5,18 @@
 
 /* global document, Office, Word */
 import { base64Image } from "../../base64Image";
+import {
+  TEXT_TO_INSERT_INTO_PARAGRAPH,
+  CUSTOM_STYLE,
+  FONT_NAME,
+  FONT_COLOR,
+  FONT_SIZE,
+  FONT_BOLD,
+  CONTENT_CONTROL_TITLE,
+  CONTENT_CONTROL_TAG,
+  CONTENT_CONTROL_APPEARANCE,
+  CONTENT_CONTROL_COLOR,
+} from "../constants/constants.js"
 
 
 Office.onReady((info) => {
@@ -25,8 +37,6 @@ Office.onReady((info) => {
     document.getElementById("app-body").style.display = "flex";
   }
 });
-
-const TEXT_TO_INSERT_INTO_PARAGRAPH = "Office has several versions, including Office 2016, Microsoft 365 subscription, and Office on the web.";
 
 async function insertParagraph() {
   await Word.run(async (context) => {
@@ -51,7 +61,7 @@ const applyStyle = async () => {
 const applyCustomStyle = async () => {
   await Word.run(async (context) => {
     const lastParagraph = context.document.body.paragraphs.getLast();
-    lastParagraph.style = "MyCustomStyle";
+    lastParagraph.style = CUSTOM_STYLE;
 
     await context.sync();
   });
@@ -61,10 +71,10 @@ const changeFont = async () => {
   await Word.run(async (context) => {
     const secondParagraph = context.document.body.paragraphs.getFirst().getNext();
     secondParagraph.font.set({
-      name: "Courier New",
-      bold: true,
-      size: 18,
-      color: "Red",
+      name: FONT_NAME,
+      bold: FONT_BOLD,
+      size: FONT_SIZE,
+      color: FONT_COLOR,
     })
     await context.sync();
   })
@@ -140,7 +150,8 @@ const insertTable = async () => {
       ["Ivan", "2", "Botevgrad"]
     ];
 
-    secondParagraph.insertTable(3, 3, Word.InsertLocation.after, tableData);
+    // secondParagraph.insertTable(3, 3, Word.InsertLocation.after, tableData);
+    secondParagraph.insertTable(tableData.length, tableData[0].length, Word.InsertLocation.after, tableData);
 
     await context.sync();
   })
@@ -151,10 +162,10 @@ const createContentControl = async() => {
     const serviceNameRange = context.document.getSelection();
     const serviceNameContentControl = serviceNameRange.insertContentControl();
 
-    serviceNameContentControl.title = "Service Name";
-    serviceNameContentControl.tag = "serviceName";
-    serviceNameContentControl.appearance = "Tags";
-    serviceNameContentControl.color = "blue";
+    serviceNameContentControl.title = CONTENT_CONTROL_TITLE;
+    serviceNameContentControl.tag = CONTENT_CONTROL_TAG;
+    serviceNameContentControl.appearance = CONTENT_CONTROL_APPEARANCE;
+    serviceNameContentControl.color = CONTENT_CONTROL_COLOR;
 
     await context.sync();
   })
@@ -162,7 +173,7 @@ const createContentControl = async() => {
 
 const replaceContentInControl = async() => {
   await Word.run(async(context) => {
-    const serviceNameContentControl = context.document.contentControls.getByTag("serviceName").getFirst();
+    const serviceNameContentControl = context.document.contentControls.getByTag(CONTENT_CONTROL_TAG).getFirst();
     serviceNameContentControl.insertText("Fabrikam Online Productivity Suite", Word.InsertLocation.replace);
 
     await context.sync();
