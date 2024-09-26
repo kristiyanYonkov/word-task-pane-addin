@@ -34,6 +34,7 @@ Office.onReady((info) => {
     document.getElementById("create-content-control").onclick = () => tryCatch(createContentControl);
     document.getElementById("replace-content-in-control").onclick = () => tryCatch(replaceContentInControl);
     document.getElementById("create-table-and-align-content").onclick = () => tryCatch(createTableAndAlignContent);
+    document.getElementById("doc-properties").onclick = () => tryCatch(getDocProperties);
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
   }
@@ -176,6 +177,32 @@ const createTableAndAlignContent = async() => {
     firstTable.horizontalAlignment = "Centered";
     firstTable.verticalAlignment = "Centered";
 
+    await context.sync();
+  })
+}
+
+//get document properties
+const getDocProperties = async() => {
+  await Word.run(async(context) => {
+    const docParagraph = context.document.body.paragraphs.getFirst().getNext();
+    const docProperties = context.document.properties;
+    docProperties.load("*")
+    await context.sync();
+
+    const docAuthor = docProperties.author = "Petar Petrov"
+    const docTitle = docProperties.title = "Task Pane Add-in";
+    const docComments = docProperties.comments = "This is a trial tutoria for exploring Word APIs";
+
+    for(let props in docProperties){
+      if(typeof docProperties[props] === "string" || typeof docProperties[props] === "number"){
+        docParagraph.insertText(`${props}: ${docProperties[props]}, \u000b`/*soft line break*/, Word.InsertLocation.end);
+      }
+      else if(typeof docProperties[props] === "object"){
+        for(let key in docProperties[props]){
+          docParagraph.insertText(`${key}: ---${docProperties[key]}---, \u000b \u000b`/*soft line break*/, Word.InsertLocation.end);
+        }
+      }
+    }
     await context.sync();
   })
 }
