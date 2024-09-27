@@ -22,6 +22,7 @@ import {
 Office.onReady((info) => {
   if (info.host === Office.HostType.Word) {
     document.getElementById("insert-paragraph").onclick = () => tryCatch(insertParagraph)
+    document.getElementById("clear-content").onclick = () => tryCatch(clearContent);
     document.getElementById("apply-style").onclick = () => tryCatch(applyStyle)
     document.getElementById("apply-custom-style").onclick = () => tryCatch(applyCustomStyle)
     document.getElementById("change-font").onclick = () => tryCatch(changeFont)
@@ -49,6 +50,14 @@ async function insertParagraph() {
 
     await context.sync();
   });
+}
+
+const clearContent = async() => {
+  await Word.run(async(context) => {
+    const docBody = context.document.body;
+    docBody.clear();
+    context.sync();
+  })
 }
 
 const applyStyle = async () => {
